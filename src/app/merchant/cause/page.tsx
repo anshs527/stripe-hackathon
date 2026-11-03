@@ -1,6 +1,7 @@
 // OWNER: P3
 "use client";
-import { useId, useState } from "react";
+import { useState } from "react";
+import { Directory } from "@/components/fundraisers/Directory";
 import { listCauses, patchMerchant } from "@/components/merchant/api";
 import { CauseCard } from "@/components/merchant/CauseCard";
 import { useMerchant } from "@/components/merchant/MerchantShell";
@@ -9,12 +10,9 @@ import { useAsync } from "@/components/merchant/useAsync";
 
 export default function CausePage() {
   const { merchant, refreshMerchant } = useMerchant();
-  const cityId = useId();
-  const [city, setCity] = useState("");
-  const [appliedCity, setAppliedCity] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { state, reload } = useAsync(() => listCauses(appliedCity || undefined), [appliedCity]);
+  const { state, reload } = useAsync(() => listCauses(), []);
 
   async function choose(causeId: string) {
     setBusy(true);
@@ -31,29 +29,7 @@ export default function CausePage() {
 
   return (
     <div className="space-y-4">
-      <form
-        className="flex items-end gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setAppliedCity(city.trim());
-        }}
-      >
-        <div className="flex-1">
-          <label htmlFor={cityId} className="block text-sm font-medium text-gray-900">
-            Filter by city
-          </label>
-          <input
-            id={cityId}
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="e.g. Austin"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          />
-        </div>
-        <button type="submit" className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white">
-          Apply
-        </button>
-      </form>
+      <p className="text-sm text-gray-600">Choose a fundraiser to support with your sales. Selecting a new one replaces your current partnership.</p>
 
       {error && <ErrorBox message={error} />}
 
@@ -61,11 +37,10 @@ export default function CausePage() {
         {(causes) =>
           causes.length === 0 ? (
             <Empty title="No active causes found">
-              {appliedCity ? `Nothing active in ${appliedCity} yet. Try another city.` : "Check back soon."}
+              Check back soon, or register a new fundraiser from the navigation above.
             </Empty>
           ) : (
-            <ul className="grid gap-4 sm:grid-cols-2">
-              {causes.map((c) => (
+            <Directory causes={causes}>{(c) => (
                 <CauseCard
                   key={c.id}
                   cause={c}
@@ -73,8 +48,7 @@ export default function CausePage() {
                   busy={busy}
                   onSelect={() => choose(c.id)}
                 />
-              ))}
-            </ul>
+              )}</Directory>
           )
         }
       </Async>

@@ -64,3 +64,9 @@ Webhook serialization currently protects only one Node process. Multiple workers
 - `src/app/shop`, `src/app/causes`, `src/components/customer`: customer/cause UI
 - `prisma`, `scripts/seed.ts`: schema, migrations, and sample data
 - `src/mocks`: independent UI/test fixtures
+
+## Fundraisers frontend
+
+The home page and `/causes` provide searchable, city-filtered fundraiser discovery inspired by PR #4. `/merchant` contains the active partnership, discovery, giving settings, and impact; `/causes/new` registers a fundraiser and starts Stripe onboarding. The UI uses the existing API contracts and supports one active cause per merchant. Illustrations are decorative, not organization photos.
+
+Prototype-only requests, multiple concurrent partnerships, scheduling, distance/maps, and contribution caps are not implemented because the backend does not model them. Existing mock flags remain independent; use a seeded database for a consistent walkthrough across business and customer screens.

@@ -1,2 +1,111 @@
-/* OWNER: P1 */
 @import "tailwindcss";
+
+:root { --ink: #1a1b25; --muted: #596171; --border: #e3e8ee; --accent: #635bff; --surface: #f6f8fa; }
+body { margin: 0; color: var(--ink); background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled), select { cursor: pointer; }
+:focus-visible { outline: 3px solid #a8a2ff; outline-offset: 3px; }
+button:disabled { cursor: not-allowed; }
+.skip-link { position: fixed; left: 16px; top: -80px; z-index: 100; background: white; padding: 12px; }
+.skip-link:focus { top: 8px; }
+.site-header { min-height: 72px; padding: 16px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 32px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; letter-spacing: -.5px; }
+.brand-mark { background: var(--accent); color: white; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 7px; font-size: 22px; }
+.site-header nav { display: flex; align-items: center; gap: 28px; margin-left: auto; font-weight: 500; }
+.site-header nav a { color: var(--muted); }
+.site-header nav a:hover, .site-header nav a[aria-current] { color: #533afd; }
+.site-header .header-action { color: var(--ink); border: 1px solid #d5dbe1; border-radius: 6px; padding: 8px 12px; }
+.test-label { font-size: 12px; color: #7b4d12; background: #fff6d8; padding: 3px 7px; border-radius: 4px; white-space: nowrap; }
+.discovery-page { max-width: 1240px; margin: auto; padding: 40px 32px 64px; }
+.page-heading, .workspace-heading { display: flex; gap: 24px; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+h1 { letter-spacing: -.65px; }
+.page-heading h1, .workspace-heading h1 { font-size: 28px; font-weight: 650; line-height: 1.25; }
+.page-heading p { color: var(--muted); margin-top: 8px; }
+.button-primary, .button-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 40px; padding: 9px 14px; border-radius: 6px; font-weight: 600; font-size: 13px; text-align: center; }
+.button-primary { background: var(--accent); color: white; }
+.button-primary:hover { background: #5348df; }
+.button-secondary { border: 1px solid #d5dbe1; background: white; }
+.button-secondary:hover { background: var(--surface); }
+.discovery-intro { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 32px; background: #fbfafc; }
+.discovery-intro > div { padding: 32px; }
+.discovery-intro h2 { font-size: 26px; font-weight: 600; line-height: 1.3; letter-spacing: -.5px; }
+.discovery-intro p { color: var(--muted); max-width: 340px; margin: 14px 0 20px; }
+.discovery-intro > img { width: 100%; height: 100%; object-fit: cover; }
+.text-link { color: #533afd; font-size: 13px; font-weight: 600; }
+.text-link:hover { text-decoration: underline; }
+.directory-filters { display: flex; align-items: end; gap: 16px; }
+.directory-filters label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.directory-filters input, .directory-filters select { height: 42px; padding: 8px 12px; border: 1px solid #d5dbe1; border-radius: 6px; background: white; width: 100%; }
+.directory-filters .search-field { width: 360px; max-width: 100%; }
+.directory-filters select { min-width: 160px; }
+.directory-filters button { min-height: 42px; }
+.result-count { color: var(--muted); font-size: 12px; margin: 20px 0 14px; }
+.fundraiser-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.fundraiser-grid > li { min-width: 0; }
+.fundraiser-link { display: block; height: 100%; }
+.public-cause-card { border-radius: 8px; box-shadow: none; height: 100%; padding: 20px; }
+.cause-art { margin: -16px -16px 4px; overflow: hidden; border-radius: 7px 7px 0 0; height: 156px; background: #e9e8ff; }
+.cause-art img { width: 100%; height: 100%; object-fit: cover; }
+.public-cause-card .cause-art { margin: -20px -20px 18px; }
+.fundraiser-grid > li:nth-child(3n + 2) .cause-art img { filter: hue-rotate(38deg); }
+.fundraiser-grid > li:nth-child(3n + 3) .cause-art img { filter: hue-rotate(295deg); }
+.cause-organizer { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.cause-details { display: block; color: #533afd; font-size: 13px; margin-top: 20px; font-weight: 600; }
+.directory-empty { border: 1px dashed #d5dbe1; border-radius: 8px; padding: 36px 24px; text-align: center; }
+.directory-empty h2, .directory-empty h3 { font-size: 18px; font-weight: 600; }
+.directory-empty p { color: var(--muted); margin: 8px 0 20px; }
+.merchant-workspace { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: calc(100vh - 73px); }
+.merchant-sidebar { border-right: 1px solid var(--border); padding: 28px 16px; background: #fafbfc; }
+.workspace-title { display: block; font-weight: 600; padding: 0 12px 24px; }
+.workspace-nav { display: flex; flex-direction: column; gap: 4px; margin-bottom: 32px; }
+.workspace-link { padding: 10px 12px; border-radius: 6px; color: var(--muted); }
+.workspace-link:hover { background: #ebeef1; }
+.workspace-link.selected { color: #533afd; background: #eeedff; font-weight: 600; }
+.merchant-sidebar > button { margin-left: 12px; }
+.workspace-content { width: 100%; max-width: 1240px; padding: 32px; }
+.workspace-heading { border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+.workspace-heading p { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.partnership-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(240px, 1fr); gap: 32px; }
+.section-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+.giving-summary { padding: 0 0 0 8px; }
+.giving-value { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+.giving-summary p:not(.giving-value) { color: var(--muted); margin-bottom: 16px; }
+.giving-summary hr { border: 0; border-top: 1px solid var(--border); margin: 24px 0; }
+@media (max-width: 1100px) { .merchant-workspace .fundraiser-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 800px) {
+  .site-header { padding: 16px 20px; gap: 16px; flex-wrap: wrap; }
+  .site-header nav { gap: 16px; font-size: 13px; }
+  .test-label { display: none; }
+  .discovery-page { padding: 28px 20px; }
+  .page-heading { align-items: start; }
+  .page-heading h1, .workspace-heading h1 { font-size: 24px; }
+  .discovery-intro > div { padding: 24px; }
+  .discovery-intro h2 { font-size: 22px; }
+  .fundraiser-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .merchant-workspace { display: block; }
+  .merchant-sidebar { border-right: 0; border-bottom: 1px solid var(--border); padding: 12px 20px; }
+  .workspace-title { display: none; }
+  .workspace-nav { flex-direction: row; flex-wrap: wrap; margin-bottom: 8px; gap: 4px; }
+  .workspace-link { padding: 8px; font-size: 13px; }
+  .workspace-content { padding: 24px 20px; }
+  .partnership-layout { gap: 24px; }
+}
+@media (max-width: 560px) {
+  .site-header nav { width: 100%; justify-content: space-between; gap: 8px; }
+  .site-header .header-action { padding: 6px 8px; }
+  .page-heading { display: block; }
+  .page-heading .button-primary { margin-top: 16px; }
+  .discovery-intro { grid-template-columns: 1fr; }
+  .discovery-intro > img { height: 150px; }
+  .directory-filters { flex-wrap: wrap; gap: 12px; }
+  .directory-filters .search-field { width: 100%; }
+  .fundraiser-grid, .merchant-workspace .fundraiser-grid, .partnership-layout { grid-template-columns: 1fr; }
+  .workspace-heading { align-items: start; gap: 12px; }
+  .workspace-heading .button-secondary { max-width: 130px; }
+  .giving-summary { padding: 0; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+.detail-cover { border-radius: 8px; overflow: hidden; margin: 24px 0; }
+.detail-cover img { display: block; width: 100%; height: 220px; object-fit: cover; }

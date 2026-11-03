@@ -69,7 +69,8 @@ export default function NewCausePage() {
   }
 
   return (
-    <Page title="Register a cause">
+    <Page title="Start a fundraiser">
+      <p className="mb-6 text-sm text-slate-600">Tell your community what you’re raising money for, then connect Stripe to receive contributions from local businesses.</p>
       <div role="note" className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
         <strong>Eligibility:</strong> the beneficiary must be an adult (18+) or an organization able to hold a
         Stripe account. Funds cannot be paid out to minors.
@@ -88,7 +89,7 @@ export default function NewCausePage() {
         </label>
         {error && <ErrorNotice message={error} />}
         <Button type="submit" className="w-full" disabled={busy}>
-          {busy ? "Creating…" : "Create cause"}
+          {busy ? "Creating…" : "Create fundraiser"}
         </Button>
       </form>
     </Page>

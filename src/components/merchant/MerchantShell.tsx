@@ -18,9 +18,9 @@ export function useMerchant(): Ctx {
 }
 
 const NAV = [
-  { href: "/merchant", label: "Overview" },
-  { href: "/merchant/cause", label: "Cause" },
-  { href: "/merchant/rules", label: "Rules" },
+  { href: "/merchant", label: "Your partnership" },
+  { href: "/merchant/cause", label: "Discover" },
+  { href: "/merchant/rules", label: "Giving settings" },
   { href: "/merchant/impact", label: "Impact" },
 ];
 
@@ -48,15 +48,15 @@ function Authed({
   const { state, reload } = useAsync(() => getMerchant(merchantId), [merchantId]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <nav aria-label="Merchant" className="flex flex-wrap gap-1">
+    <div className="merchant-workspace">
+      <header className="merchant-sidebar"><Link href="/merchant" className="workspace-title">Business workspace</Link>
+        <nav aria-label="Merchant" className="workspace-nav">
           {NAV.map((n) => (
             <Link
               key={n.href}
               href={`${n.href}?merchantId=${encodeURIComponent(merchantId)}`}
               aria-current={pathname === n.href ? "page" : undefined}
-              className={`rounded-md px-3 py-1.5 text-sm ${pathname === n.href ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-100"}`}
+              className={pathname === n.href ? "workspace-link selected" : "workspace-link"}
             >
               {n.label}
             </Link>
@@ -66,14 +66,14 @@ function Authed({
           Switch merchant
         </button>
       </header>
-      <Async state={state} onRetry={reload}>
+      <div className="workspace-content"><Async state={state} onRetry={reload}>
         {(merchant) => (
           <MerchantContext.Provider value={{ merchant, refreshMerchant: reload }}>
-            <h1 className="mb-4 text-xl font-semibold text-gray-900">{merchant.name}</h1>
+            <div className="workspace-heading"><div><p>{merchant.name}</p><h1>{NAV.find(n => n.href === pathname)?.label ?? "Account setup"}</h1></div><Link className="button-secondary" href={`/shop/${encodeURIComponent(merchant.id)}`}>Open storefront ↗</Link></div>
             {children}
           </MerchantContext.Provider>
         )}
-      </Async>
+      </Async></div>
     </div>
   );
 }
@@ -103,8 +103,8 @@ function IdentityPicker({ onPick }: { onPick: (id: string) => void }) {
   return (
     <div className="mx-auto max-w-md space-y-8 px-4 py-10">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">Choose a merchant</h1>
-        <p className="text-sm text-gray-600">Demo identity: there is no sign-in.</p>
+        <h1 className="text-xl font-semibold text-gray-900">Your business, giving back</h1>
+        <p className="text-sm text-gray-600">Choose a demo business or open your business using its ID. This test app has no sign-in.</p>
       </div>
 
       <Async state={state}>
