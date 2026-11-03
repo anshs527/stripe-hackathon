@@ -2,6 +2,7 @@
 import type Stripe from "stripe";
 import { db } from "../../db";
 import { statusFromAccount } from "../connect";
+import { stripe } from "../client";
 
 /** Persists onboarding state for the Merchant/Cause owning this account. Idempotent; unknown accounts are a no-op. */
 export async function applyAccountStatus(account: Pick<Stripe.Account, 'id' | 'details_submitted' | 'capabilities' | 'requirements'>): Promise<boolean> {
@@ -14,5 +15,8 @@ export async function applyAccountStatus(account: Pick<Stripe.Account, 'id' | 'd
 }
 
 export async function handleAccountUpdated(event: Stripe.Event): Promise<void> {
-  await applyAccountStatus(event.data.object as Stripe.Account);
+  if (event.livemode) throw new Error("Test mode only");
+  const snapshot = event.data.object as Stripe.Account;
+  // Re-read current state: Stripe can deliver older account events after newer ones.
+  await applyAccountStatus(await stripe.accounts.retrieve(snapshot.id));
 }

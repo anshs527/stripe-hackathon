@@ -31,6 +31,7 @@ beforeEach(async () => {
   await db.cause.deleteMany(); await db.merchant.deleteMany();
   await db.merchant.create({ data: { id: 'm1', name: 'Cafe', email: 'c@x.com' } });
   await db.cause.create({ data: { id: 'c1', slug: 'park', title: 'Park', description: 'd', city: 'SF', goalCents: 1000, ownerName: 'o' } });
+  m.retrieve.mockImplementation(async (id: string) => done(id));
   m.create.mockResolvedValue({ id: 'acct_1' });
   m.link.mockResolvedValue({ url: 'https://connect.stripe.com/setup/x' });
 });
@@ -45,7 +46,9 @@ describe('connect lib', () => {
   });
   it('creates onboarding link with refresh and return urls', async () => {
     expect(await createOnboardingLink('acct_1', '/x/done', { kind: 'merchant', id: 'm 1' })).toEqual({ url: 'https://connect.stripe.com/setup/x' });
-    expect(m.link).toHaveBeenCalledWith({ account: 'acct_1', type: 'account_onboarding', refresh_url: 'http://app.test/api/connect/refresh?kind=merchant&id=m%201', return_url: 'http://app.test/x/done' });
+    expect(m.link).toHaveBeenCalledWith({ account: 'acct_1', type: 'account_onboarding', refresh_url: 'http://app.test/api/connect/refresh?kind=merchant&id=m%201', return_url: 'http://app.test/x/done' }, { idempotencyKey: expect.stringMatching(/^connect:link:acct_1:/) });
+    await createOnboardingLink('acct_1', '/x/done', { kind: 'merchant', id: 'm 1' });
+    expect(m.link.mock.calls[0][1].idempotencyKey).not.toBe(m.link.mock.calls[1][1].idempotencyKey);
   });
   it('status requires details, active transfers and nothing due', async () => {
     m.retrieve.mockResolvedValueOnce(done('a'));
@@ -58,6 +61,16 @@ describe('connect lib', () => {
 });
 
 describe('account.updated handler', () => {
+  it('ignores stale event state and uses current Stripe readiness', async () => {
+    await db.merchant.update({ where: { id: 'm1' }, data: { stripeAccountId: 'acct_m' } });
+    await handleAccountUpdated(ev({ ...done('acct_m'), details_submitted: false }));
+    expect(m.retrieve).toHaveBeenCalledWith('acct_m');
+    expect((await db.merchant.findUniqueOrThrow({ where: { id: 'm1' } })).onboardingComplete).toBe(true);
+  });
+  it('rejects live account events before contacting Stripe', async () => {
+    await expect(handleAccountUpdated({ livemode: true, data: { object: done('acct_m') } } as never)).rejects.toThrow('Test mode only');
+    expect(m.retrieve).not.toHaveBeenCalled();
+  });
   it('completes merchant, activates DRAFT cause, idempotent; never reopens CLOSED; unknown no-op', async () => {
     await db.merchant.update({ where: { id: 'm1' }, data: { stripeAccountId: 'acct_m' } });
     await db.cause.update({ where: { id: 'c1' }, data: { stripeAccountId: 'acct_c' } });
@@ -73,6 +86,8 @@ describe('account.updated handler', () => {
   it('revokes readiness when a previously onboarded account loses transfers', async () => {
     await db.merchant.update({ where: { id: 'm1' }, data: { stripeAccountId: 'acct_m', onboardingComplete: true } });
     await db.cause.update({ where: { id: 'c1' }, data: { stripeAccountId: 'acct_c', onboardingComplete: true, status: 'ACTIVE' } });
+    m.retrieve.mockResolvedValueOnce({ ...done('acct_m'), capabilities: { transfers: 'inactive' } });
+    m.retrieve.mockResolvedValueOnce({ ...done('acct_c'), requirements: { currently_due: ['a'], past_due: [] } });
     await handleAccountUpdated(ev({ ...done('acct_m'), capabilities: { transfers: 'inactive' } }));
     await handleAccountUpdated(ev({ ...done('acct_c'), requirements: { currently_due: ['a'], past_due: [] } }));
     expect((await db.merchant.findUniqueOrThrow({ where: { id: 'm1' } })).onboardingComplete).toBe(false);
@@ -80,6 +95,7 @@ describe('account.updated handler', () => {
   });
   it('does nothing while requirements outstanding', async () => {
     await db.cause.update({ where: { id: 'c1' }, data: { stripeAccountId: 'acct_c' } });
+    m.retrieve.mockResolvedValueOnce({ ...done('acct_c'), requirements: { currently_due: ['a'], past_due: [] } });
     await handleAccountUpdated(ev({ ...done('acct_c'), requirements: { currently_due: ['a'], past_due: [] } }));
     expect(await db.cause.findUniqueOrThrow({ where: { id: 'c1' } })).toMatchObject({ onboardingComplete: false, status: 'DRAFT' });
   });

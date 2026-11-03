@@ -2,6 +2,10 @@
 // Idempotent seed. Run: tsx scripts/seed.ts
 // Demo progress is synthetic. Complete real Stripe test onboarding before checkout.
 import { PrismaClient } from "@prisma/client";
+import { existsSync } from "node:fs";
+
+// tsx does not load .env automatically; preserve explicit test/deployment overrides.
+if (existsSync(".env")) process.loadEnvFile(".env");
 
 const db = new PrismaClient();
 

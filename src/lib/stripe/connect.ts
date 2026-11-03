@@ -1,5 +1,6 @@
 // OWNER: P1
 import type Stripe from 'stripe';
+import { randomUUID } from 'node:crypto';
 import type { ConnectStatusResponse } from '../contract';
 import { stripe } from './client';
 
@@ -11,6 +12,8 @@ export async function createConnectedAccount(input: { kind: ConnectKind; id: str
   return stripe.accounts.create({
     country: 'US',
     ...(input.email ? { email: input.email } : {}),
+    // Accounts v1 controllers preserve account.updated and Stripe-hosted onboarding.
+    // https://docs.stripe.com/connect/migrate-to-controller-properties
     controller: {
       stripe_dashboard: { type: 'express' },
       fees: { payer: 'application' },
@@ -34,7 +37,7 @@ export async function createOnboardingLink(accountId: string, returnPath: string
     type: 'account_onboarding',
     refresh_url: refresh,
     return_url: `${base}${returnPath}`,
-  });
+  }, { idempotencyKey: `connect:link:${accountId}:${randomUUID()}` });
   return { url: link.url };
 }
 

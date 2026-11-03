@@ -64,3 +64,23 @@ Webhook serialization currently protects only one Node process. Multiple workers
 - `src/app/shop`, `src/app/causes`, `src/components/customer`: customer/cause UI
 - `prisma`, `scripts/seed.ts`: schema, migrations, and sample data
 - `src/mocks`: independent UI/test fixtures
+
+## Judge demo rehearsal
+
+1. Open `/` for the demo entry points. Keep mock flags unset for a real Stripe test walkthrough.
+2. Complete Connect platform setup before merchant/cause onboarding. If Stripe rejects Accounts v1 creation with `application` as losses collector, review the platform profile at https://dashboard.stripe.com/settings/connect/platform-profile. This project uses separate charges and transfers; do not silently substitute direct charges or a different liability model. See https://docs.stripe.com/connect/risk-management/connected-accounts-with-managed-risk.
+3. Onboard `demo-roundup` and `community-garden`, then verify both status endpoints report onboarding complete. For the percentage walkthrough, also onboard `demo-percent` and its selected `youth-soccer-fund` cause.
+4. Keep the app and Stripe listener running. Pay once from `/shop/demo-roundup`; verify merchant/cause transfers in Stripe and the increase in cause progress. Re-deliver the payment event and verify totals remain unchanged. Repeat with percentage mode, then issue a full test refund and verify reversals.
+5. Seed history is synthetic and is not evidence of Stripe transfers. Partial refunds and multiple application workers are outside this demo's supported flow.
+
+The seed command loads `.env` when present without overriding explicitly supplied environment variables. Account webhooks fetch current Stripe state to avoid applying stale event snapshots. Every new onboarding-link operation has its own idempotency key, while retries within that operation reuse it.
+
+Local CLI bootstrap without changing project dependencies:
+
+```sh
+npm install --prefix /tmp/stripe-demo-cli @stripe/cli
+export PATH="/tmp/stripe-demo-cli/node_modules/.bin:$PATH"
+stripe login
+```
+
+Then use the `stripe listen` command above. The CLI installed in `/tmp` may need reinstalling after a reboot. Do not put API keys in command-line arguments or commit `.env`.
