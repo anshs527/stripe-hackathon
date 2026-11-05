@@ -1,4 +1,4 @@
-# Stripe Social Impact
+# Stripe Fundraisers
 
 A test-mode hackathon app for merchant-funded percentage donations and customer round-ups. Built with Next.js, React, Prisma/SQLite, and Stripe Connect. Includes merchant settings, cause registration, checkout, webhook settlement, and impact reporting.
 
